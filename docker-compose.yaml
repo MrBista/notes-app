@@ -1,0 +1,17 @@
+services:
+  notes-app-db:
+    container_name: notes-app-db
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_USER: notes-app
+      MYSQL_PASSWORD: notes-app
+      MYSQL_ROOT_PASSWORD: notes-app
+      MYSQL_DATABASE: notes_app
+    ports:
+      - "4002:3306"
+    volumes:
+      - notes_app_volumes:/var/lib/mysql
+
+volumes:
+  notes_app_volumes:
