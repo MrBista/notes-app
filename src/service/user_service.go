@@ -46,6 +46,15 @@ type UserServiceImpl struct {
 	Validate *validator.Validate
 }
 
+func NewUserServiceImpl(db *gorm.DB, validate *validator.Validate) UserService {
+
+	return &UserServiceImpl{
+		DB:       db,
+		Validate: validate,
+	}
+
+}
+
 func HashPassword(password string) (string, error) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	return string(hashedPassword), err
