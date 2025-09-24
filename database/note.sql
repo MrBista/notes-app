@@ -1,0 +1,10 @@
+CREATE TABLE notes (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
+    status int default 0,
+    title VARCHAR(255) NOT NULL,
+    content TEXT NOT NULL,
+    is_favorite BOOLEAN DEFAULT FALSE,
+    reminder_at TIMESTAMP ,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

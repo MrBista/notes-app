@@ -12,7 +12,7 @@ type Note struct {
 	IsFavorite bool      `gorm:"column:is_favorite"`
 	ReminderAt time.Time `gorm:"column:reminder_at"`
 	CreatedAt  time.Time `gorm:"column:created_at"`
-	UpdatedAt  time.Time `gorm:"column:created_at"`
+	UpdatedAt  time.Time `gorm:"column:updated_at"`
 }
 
 func (n *Note) TableName() string {
