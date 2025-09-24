@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"notes-golang/src/models"
+	"notes-golang/src/repository"
 	"time"
 
 	"github.com/go-playground/validator/v10"
@@ -44,13 +45,15 @@ type UserService interface {
 type UserServiceImpl struct {
 	DB       *gorm.DB
 	Validate *validator.Validate
+	UserRepo repository.UserRepository
 }
 
-func NewUserServiceImpl(db *gorm.DB, validate *validator.Validate) UserService {
+func NewUserServiceImpl(db *gorm.DB, validate *validator.Validate, userRepo repository.UserRepository) UserService {
 
 	return &UserServiceImpl{
 		DB:       db,
 		Validate: validate,
+		UserRepo: userRepo,
 	}
 
 }
@@ -89,23 +92,15 @@ func (s *UserServiceImpl) RegisterUser(registerReq ReqisterReq) (RegisterRes, er
 		return registerResponse, errHash
 	}
 
-	err := s.DB.Transaction(func(tx *gorm.DB) error {
-		user := models.User{
-			FullName: registerReq.FullName,
-			Email:    registerReq.Email,
-			Username: registerReq.Username,
-			Password: passwordHashed,
-			Status:   1,
-		}
+	user := models.User{
+		FullName: registerReq.FullName,
+		Email:    registerReq.Email,
+		Username: registerReq.Username,
+		Password: passwordHashed,
+		Status:   1,
+	}
 
-		err := tx.Create(user).Error
-
-		if err != nil {
-			return err
-		}
-
-		return nil
-	})
+	err := s.UserRepo.CreateUser(user)
 
 	if err != nil {
 		return registerResponse, fmt.Errorf("terjadi kesalahan %w", err)
@@ -134,12 +129,14 @@ func (s *UserServiceImpl) LoginUser(loginReq LoginRequest) (LoginResponse, error
 	// 4. kalau ga match maka throw
 	// 5. lalu generate jwt sebagai response
 
-	var user models.User
-	err = s.DB.Take(&user, "email = ? or username = ?", loginReq.Identifier, loginReq.Identifier).Error
+	// var user models.User
+	// err = s.DB.Take(&user, "email = ? or username = ?", loginReq.Identifier, loginReq.Identifier).Error
+
+	user, err := s.UserRepo.FindUserByIdentifier(loginReq.Identifier)
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return responseLogin, errors.New("User not found")
+			return responseLogin, errors.New("user not found")
 		}
 		return responseLogin, err
 	}
