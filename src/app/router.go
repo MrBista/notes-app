@@ -2,6 +2,7 @@ package app
 
 import (
 	"notes-golang/src/controller"
+	"notes-golang/src/middleware"
 
 	"github.com/julienschmidt/httprouter"
 )
@@ -12,11 +13,11 @@ func userRouter(router *httprouter.Router, userController controller.UserControl
 }
 
 func noteRouter(router *httprouter.Router, noteController controller.NoteController) {
-	router.GET("/api/v1/notes", noteController.DeleteNoteById)
-	router.GET("/api/v1/notes/:id", noteController.FindNoteById)
-	router.POST("/api/v1/notes", noteController.CreateNote)
-	router.PUT("/api/v1/notes/:id", noteController.UpdateNote)
-	router.DELETE("/api/v1/notes/:id", noteController.DeleteNoteById)
+	router.GET("/api/v1/notes", middleware.AuthMiddleware(noteController.FindAllNote))
+	router.GET("/api/v1/notes/:id", middleware.AuthMiddleware(noteController.FindNoteById))
+	router.POST("/api/v1/notes", middleware.AuthMiddleware(noteController.CreateNote))
+	router.PUT("/api/v1/notes/:id", middleware.AuthMiddleware(noteController.UpdateNote))
+	router.DELETE("/api/v1/notes/:id", middleware.AuthMiddleware(noteController.DeleteNoteById))
 
 }
 

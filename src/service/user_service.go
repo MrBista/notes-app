@@ -3,6 +3,7 @@ package service
 import (
 	"errors"
 	"fmt"
+	"notes-golang/src/helper"
 	"notes-golang/src/models"
 	"notes-golang/src/repository"
 	"time"
@@ -145,7 +146,11 @@ func (s *UserServiceImpl) LoginUser(loginReq LoginRequest) (LoginResponse, error
 		return responseLogin, err
 	}
 
-	tokenGenerated := "ini adalah token generated"
+	tokenGenerated, err := helper.CreateToken(user.Id, 1)
+
+	if err != nil {
+		return responseLogin, err
+	}
 
 	loginResponse := LoginResponse{
 		AccessToken: tokenGenerated,

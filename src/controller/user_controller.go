@@ -81,10 +81,16 @@ func (c *UserControllerImpl) UserLogin(w http.ResponseWriter, r *http.Request, p
 		return
 	}
 
+	webResponse := res.CommonResponseSuccess{
+		Data:    data,
+		Status:  http.StatusOK,
+		Message: "Successfully login",
+	}
+
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 
 	encoder := json.NewEncoder(w)
 
-	encoder.Encode(data)
+	encoder.Encode(&webResponse)
 }
